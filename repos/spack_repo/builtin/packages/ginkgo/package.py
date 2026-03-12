@@ -161,12 +161,6 @@ class Ginkgo(CMakePackage, CudaPackage, ROCmPackage):
         when="@1.10.0",
     )
 
-    # Start with >=1.9.0 (and develop)
-
-    #patch("patches/resource_manager-amgx_pgm.patch", when="@1.9.0: +cuda")
-    #patch("patches/multigrid-zero_guess.patch", when="@1.9.0:")
-    #patch("patches/rapidjson_helper-cycle.patch", when="@1.9.0:")
-
     def setup_build_environment(self, env: EnvironmentModifications) -> None:
         spec = self.spec
         if spec.satisfies("+sycl"):
