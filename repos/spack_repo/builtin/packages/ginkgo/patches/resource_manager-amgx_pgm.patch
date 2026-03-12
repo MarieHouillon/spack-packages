@@ -1,0 +1,25 @@
+--- a/extensions/resource_manager/include/resource_manager/multigrid/amgx_pgm.hpp
++++ b/extensions/resource_manager/include/resource_manager/multigrid/amgx_pgm.hpp
+@@ -33,7 +33,21 @@
+ #ifndef GKO_PUBLIC_EXT_RESOURCE_MANAGER_MULTIGRID_AMGX_PGM_HPP_
+ #define GKO_PUBLIC_EXT_RESOURCE_MANAGER_MULTIGRID_AMGX_PGM_HPP_
+ 
+-#include <ginkgo/core/multigrid/amgx_pgm.hpp>
++//#include <ginkgo/core/multigrid/amgx_pgm.hpp>
++
++#if defined(__has_include)
++#  if __has_include(<ginkgo/core/multigrid/amgx_pgm.hpp>)
++#    include <ginkgo/core/multigrid/amgx_pgm.hpp>
++#  elif __has_include(<ginkgo/core/multigrid/pgm.hpp>)
++#    include <ginkgo/core/multigrid/pgm.hpp>
++#  else
++#    error "Ginkgo: neither <ginkgo/core/multigrid/amgx_pgm.hpp> nor <ginkgo/core/multigrid/pgm.hpp> found"
++#  endif
++#else
++/* Fallback for compilers without __has_include: prefer pgm.hpp */
++#  include <ginkgo/core/multigrid/pgm.hpp>
++#endif
++
+ 
+ #include "resource_manager/base/generic_constructor.hpp"
+ #include "resource_manager/base/helper.hpp"

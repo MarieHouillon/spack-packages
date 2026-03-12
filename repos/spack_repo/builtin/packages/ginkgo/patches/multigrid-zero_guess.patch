@@ -1,0 +1,64 @@
+--- a/extensions/resource_manager/include/resource_manager/solver/multigrid.hpp
++++ b/extensions/resource_manager/include/resource_manager/solver/multigrid.hpp
+@@ -49,11 +49,48 @@
+ #include "resource_manager/base/type_string.hpp"
+ #include "resource_manager/base/types.hpp"
+ 
++#include <type_traits> 
++#include <utility>
+ 
+ namespace gko {
+ namespace extension {
+ namespace resource_manager {
+ 
++namespace detail {
++
++// C++14-compatible void_t
++template <typename...>
++using void_t = void;
++
++template <typename Factory, typename = void>
++struct has_with_zero_guess : std::false_type {};
++
++template <typename Factory>
++struct has_with_zero_guess<
++    Factory,
++    void_t<decltype(std::declval<Factory&>().with_zero_guess(std::declval<bool>()))>>
++    : std::true_type {};
++
++template <typename Factory>
++inline void set_zero_guess_impl(Factory& f, bool v, std::true_type)
++{
++    f.with_zero_guess(v);
++}
++
++template <typename Factory>
++inline void set_zero_guess_impl(Factory&, bool, std::false_type)
++{
++    // not supported by this Ginkgo -> ignore
++}
++
++template <typename Factory>
++inline void set_zero_guess_if_supported(Factory& f, bool v)
++{
++    set_zero_guess_impl(f, v, has_with_zero_guess<Factory>{});
++}
++
++}  // namespace detail
++
+ 
+ template <>
+ struct Generic<typename gko::solver::Multigrid::Factory,
+@@ -87,7 +124,11 @@
+             SET_VALUE(double, kcycle_rel_tol);
+             SET_VALUE(std::complex<double>, smoother_relax);
+             SET_VALUE(size_type, smoother_iters);
+-            SET_VALUE(bool, zero_guess);
++            //SET_VALUE(bool, zero_guess);
++            if (item.HasMember("zero_guess")) {
++                detail::set_zero_guess_if_supported(factory_alias_, item["zero_guess"].GetBool());
++            }
++
+             SET_EXECUTOR;
+         }();
+         add_logger(ptr, item, exec, linop, manager);

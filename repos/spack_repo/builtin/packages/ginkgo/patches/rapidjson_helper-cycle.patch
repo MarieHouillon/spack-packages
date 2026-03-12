@@ -1,0 +1,16 @@
+--- a/extensions/resource_manager/include/resource_manager/base/rapidjson_helper.hpp
++++ b/extensions/resource_manager/include/resource_manager/base/rapidjson_helper.hpp
+@@ -246,9 +246,11 @@
+     } else if (str == "w") {
+         return gko::solver::multigrid::cycle::w;
+     } else if (str == "kfcg") {
+-        return gko::solver::multigrid::cycle::kfcg;
++        //return gko::solver::multigrid::cycle::kfcg;
++        return gko::solver::multigrid::cycle::v;
+     } else if (str == "kgcr") {
+-        return gko::solver::multigrid::cycle::kgcr;
++        //return gko::solver::multigrid::cycle::kgcr;
++        return gko::solver::multigrid::cycle::v;
+     } else {
+         assert(false);
+         // avoid the warning about return type
