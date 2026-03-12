@@ -91,8 +91,7 @@ class Opencarp(CMakePackage):
     patch("opencarp7.patch", when="@7.0")
 
     # Patch numerics/ginkgo/SF_ginkgo_solver.cc
-    patch("patches/opencarp-ginkgo-iterativebase-namespace.patch",
-       when="@:17.0 +ginkgo ^ginkgo@1.9:")
+    patch("patches/opencarp-ginkgo-iterativebase-namespace.patch", when="@:17.0 +ginkgo ^ginkgo@1.9:")
     depends_on("c", type="build")  # generated
     depends_on("cxx", type="build")  # generated
 
@@ -281,6 +280,6 @@ class Opencarp(CMakePackage):
                         "settings.yaml." + datetime.today().strftime("%Y-%m-%d-%H:%M:%S"),
                     ),
                 )
-
+            cusettings = Executable("cusettings")
             flavor = self._build_suffix().replace("_", "-")  # ie: ginkgo-cpu-mpi-omp
             cusettings(settings_file, "--flavor", flavor, "--software-root", str(self.prefix))
