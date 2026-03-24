@@ -125,7 +125,7 @@ class Ginkgo(CMakePackage, CudaPackage, ROCmPackage):
     conflicts("^cuda@12.4", when="+cuda", msg="CCCL 2.3 bug causes build failure.")
 
     # https://github.com/ginkgo-project/ginkgo/pull/1926
-    conflicts("^cuda@13:", when="@:1.10.0 +cuda")
+    #conflicts("^cuda@13:", when="@:1.10.0 +cuda")
 
     # error due to change in warpSize constant definition in ROCm 7.0 prior to v.1.11.0
     # https://github.com/ginkgo-project/ginkgo/pull/1954
@@ -145,7 +145,7 @@ class Ginkgo(CMakePackage, CudaPackage, ROCmPackage):
 
     # Revert the fix from github.com/ginkgo-project/ginkgo/pull/1954/changes
     # This only affects the benchmark part of Ginkgo, which is not built by spack anyway
-    patch("remove_finding_thrust.patch", when="@1.11.0 +cuda")
+    patch("remove_finding_thrust.patch", when="@1.9.0 +cuda")
 
     # Correctly find rocthrust through CMake
     patch(
