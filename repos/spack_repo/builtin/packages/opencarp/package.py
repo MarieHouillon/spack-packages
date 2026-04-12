@@ -67,7 +67,6 @@ class Opencarp(CMakePackage):
 
     variant("carputils", default=False, description="Installs the carputils framework")
     variant("meshtool", default=False, description="Installs the meshtool software")
-    variant("mpi", default=True, description="Enable MPI support")
     variant("openmp", default=True, description="Enable OpenMP support")
     variant("ginkgo", default=False, description="Build with Ginkgo linear solvers")
     variant("cuda", default=False, description="Enable CUDA support")
@@ -105,8 +104,7 @@ class Opencarp(CMakePackage):
     depends_on("zlib-api")
     depends_on("perl")
 
-    depends_on("mpi", when="+mpi")
-
+    depends_on("mpi")
 
     # Ginkgo is optional
     depends_on("rapidjson", when="+ginkgo", type="build")
@@ -118,9 +116,6 @@ class Opencarp(CMakePackage):
     depends_on("ginkgo~sde", when="+ginkgo ^ginkgo@1.7:")
 
     # Mirror opencarp features onto ginkgo (force overlay namespace)
-    depends_on("ginkgo+mpi",    when="+ginkgo+mpi")
-    depends_on("ginkgo~mpi",    when="+ginkgo~mpi")
-
     depends_on("ginkgo+openmp", when="+ginkgo+openmp")
     depends_on("ginkgo~openmp", when="+ginkgo~openmp")
 
@@ -187,17 +182,15 @@ class Opencarp(CMakePackage):
             self.define("SPACK_BUILD", True),
 
             self.define("BUILD_EXTERNAL", False),
-            self.define("ENABLE_MPI", "+mpi" in spec),
             self.define("USE_OPENMP", "+openmp" in spec),
             self.define("USE_CUDA", "+cuda" in spec),
         ]
 
 
-        if "+mpi" in spec:
-            args += [
-                self.define("MPI_C_COMPILER", spec["mpi"].mpicc),
-                self.define("MPI_CXX_COMPILER", spec["mpi"].mpicxx),
-                self.define("MPIEXEC_EXECUTABLE", join_path(spec["mpi"].prefix.bin, "mpiexec")),
+        args += [
+             self.define("MPI_C_COMPILER", spec["mpi"].mpicc),
+             self.define("MPI_CXX_COMPILER", spec["mpi"].mpicxx),
+             self.define("MPIEXEC_EXECUTABLE", join_path(spec["mpi"].prefix.bin, "mpiexec")),
 
             ]
 
@@ -251,8 +244,6 @@ class Opencarp(CMakePackage):
         parts.append("cuda" if "+cuda" in spec else "cpu")
 
         # parallel
-        if "+mpi" in spec:
-            parts.append("mpi")
         if "+openmp" in spec:
             parts.append("omp")
 
@@ -281,5 +272,4 @@ class Opencarp(CMakePackage):
                     ),
                 )
             cusettings = Executable("cusettings")
-            flavor = self._build_suffix().replace("_", "-")  # ie: ginkgo-cpu-mpi-omp
-            cusettings(settings_file, "--flavor", flavor, "--software-root", str(self.prefix))
+            cusettings(settings_file, "--software-root", str(self.prefix))
