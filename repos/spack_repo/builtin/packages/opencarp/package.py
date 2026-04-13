@@ -147,18 +147,6 @@ class Opencarp(CMakePackage):
         depends_on("py-carputils@oc" + ver, when="@" + ver + " +carputils")
         depends_on("meshtool@oc" + ver, when="@" + ver + " +meshtool")
 
-
-    def _cuda_arch_str(self):
-        if "cuda_arch" not in self.spec.variants:
-            return None
-        archs = self.spec.variants["cuda_arch"].value
-        if not archs or archs == ("none",) or archs == "none":
-            return None
-        if isinstance(archs, str):
-            return archs
-        return ";".join(archs)
-
-
     def _ginkgo_cmake_dir(self):
         prefix = self.spec["ginkgo"].prefix
         candidates = [
@@ -180,10 +168,7 @@ class Opencarp(CMakePackage):
         args = [
             self.define("DLOPEN", True),
             self.define("SPACK_BUILD", True),
-
             self.define("BUILD_EXTERNAL", False),
-            self.define("USE_OPENMP", "+openmp" in spec),
-            self.define("USE_CUDA", "+cuda" in spec),
         ]
 
 
@@ -196,36 +181,9 @@ class Opencarp(CMakePackage):
 
         if "+ginkgo" in spec:
             args += [
-                self.define("ENABLE_GINKGO", True),
-                self.define("CARP_USE_GINKGO", True),
                 self.define("GINKGO_DIR", spec["ginkgo"].prefix),
                 self.define("Ginkgo_DIR", self._ginkgo_cmake_dir()),
-                # self.define("CMAKE_PREFIX_PATH", spec["ginkgo"].prefix),
             ]
-        else:
-            args += [
-                self.define("ENABLE_GINKGO", False),
-                self.define("CARP_USE_GINKGO", False),
-            ]
-
-
-        # CUDA
-        if "+cuda" in spec:
-            args += [
-                self.define("CUDAToolkit_ROOT", spec["cuda"].prefix),
-                self.define("CMAKE_CUDA_STANDARD", 17),
-            ]
-
-            arch_str = self._cuda_arch_str()
-            if arch_str:
-                args.append(self.define("CMAKE_CUDA_ARCHITECTURES", arch_str))
-                # flags custom :
-                args.append(self.define("CUDA_GPU_ARCH", "sm_%s" % arch_str.split(";")[0]))
-                args.append(self.define("CUDA_ENABLE_RDC", True))
-                args.append(self.define(
-                    "CMAKE_CUDA_FLAGS",
-                    "--cuda-gpu-arch=sm_%s --no-cuda-version-check" % arch_str.split(";")[0],
-                ))
 
         return args
 
