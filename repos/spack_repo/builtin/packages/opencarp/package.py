@@ -133,13 +133,11 @@ class Opencarp(CMakePackage, CudaPackage):
         depends_on("py-carputils@oc" + ver, when="@" + ver + " +carputils")
         depends_on("meshtool@oc" + ver, when="@" + ver + " +meshtool")
 
-
     def cmake_args(self):
         spec = self.spec
         args = [
             self.define("DLOPEN", True),
             self.define("SPACK_BUILD", True),
-
             self.define("BUILD_EXTERNAL", False),
             self.define("USE_OPENMP", "UTILS" if "+openmp" in spec else "OFF")
         ]
