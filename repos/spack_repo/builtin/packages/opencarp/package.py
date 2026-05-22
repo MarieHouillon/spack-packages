@@ -6,12 +6,12 @@ import os
 from datetime import datetime
 
 from spack_repo.builtin.build_systems.cmake import CMakePackage
-
+from spack_repo.builtin.build_systems.cuda import CudaPackage
 
 from spack.package import *
 
 
-class Opencarp(CMakePackage):
+class Opencarp(CMakePackage, CudaPackage):
     """The openCARP simulation software,
     an open cardiac electrophysiology simulator for in-silico experiments."""
 
@@ -69,16 +69,7 @@ class Opencarp(CMakePackage):
     variant("meshtool", default=False, description="Installs the meshtool software")
     variant("openmp", default=True, description="Enable OpenMP support")
     variant("ginkgo", default=False, description="Build with Ginkgo linear solvers")
-    variant("cuda", default=False, description="Enable CUDA support")
 
-    variant(
-        "cuda_arch",
-        default="none",
-        values=("none", "70", "75", "80", "86", "89", "90"),
-        multi=True,
-        description="CUDA architectures for CMAKE_CUDA_ARCHITECTURES",
-        when="+cuda",
-    )
 
 
 
@@ -122,8 +113,6 @@ class Opencarp(CMakePackage):
     depends_on("ginkgo+cuda",   when="+ginkgo+cuda")
     depends_on("ginkgo~cuda",   when="+ginkgo~cuda")
 
-    # CUDA toolchain
-    depends_on("cuda", when="+cuda")
 
 
     depends_on("py-carputils", when="+carputils", type=("build", "run"))
