@@ -69,7 +69,7 @@ class Opencarp(CMakePackage, CudaPackage):
     variant("meshtool", default=False, description="Installs the meshtool software")
     variant("openmp", default=True, description="Enable OpenMP support")
     variant("ginkgo", default=False, description="Build with Ginkgo linear solvers")
-    variant("cuda", default=False, description="Enable CUDA support")
+
 
     conflicts("+cuda", when="~ginkgo", msg="+cuda is supported only with +ginkgo")
 
@@ -104,12 +104,7 @@ class Opencarp(CMakePackage, CudaPackage):
     depends_on("ginkgo+cuda",   when="+ginkgo+cuda")
     depends_on("ginkgo~cuda",   when="+ginkgo~cuda")
 
-    # MPI implementations with CUDA support
-    depends_on("openmpi+cuda", when="+cuda ^openmpi")
-    depends_on("mpich+cuda", when="+cuda ^mpich")
 
-    # CUDA toolchain
-    depends_on("cuda", when="+cuda")
 
 
     depends_on("py-carputils", when="+carputils", type=("build", "run"))
